@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1082873622420",
+    "project_id": "yourchat-backend",
+    "storage_bucket": "yourchat-backend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082873622420:android:1eb3425f4abf0e57e5e981",
+        "android_client_info": {
+          "package_name": "com.example.yourchat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4wP7Ob2P_6oms0VgHlDIZtZ7lKDZSLww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
