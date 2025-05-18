@@ -1,7 +1,10 @@
 package com.example.yourchat;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -13,7 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.yourchat.adapter.ChatRecyclerAdapter;
-import com.example.yourchat.adapter.SearchUserRecyclerAdapter;
+import com.example.yourchat.adapter.DraftRecyclerAdapter;
+import com.example.yourchat.db.Draft;
 import com.example.yourchat.model.ChatMessageModel;
 import com.example.yourchat.model.ChatroomModel;
 import com.example.yourchat.model.UserModel;
@@ -23,16 +27,16 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
-//import org.checkerframework.checker.units.qual.C;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,18 +47,22 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements DraftRecyclerAdapter.OnClickListener {
 
     UserModel otherUser;
     String chatroomId;
     ChatroomModel chatroomModel;
     ChatRecyclerAdapter adapter;
+    DraftRecyclerAdapter draftAdapter;
 
     EditText messageInput;
     ImageButton sendMessageBtn;
+    ImageButton saveMessageBtn;
+    Button loadDraftsBtn;
     ImageButton backBtn;
     TextView otherUsername;
     RecyclerView recyclerView;
+    RecyclerView draftsRecyclerView;
     ImageView imageView;
 
 
@@ -63,49 +71,76 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.SCREEN_NAME, "chat");
+        ((YourChatApplication) getApplication()).getFirebaseAnalytics()
+                .logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle);
+
         //get UserModel, access through the intent
         otherUser = AndroidUtil.getUserModelFromIntent(getIntent());
-        chatroomId = FirebaseUtil.getChatroomId(FirebaseUtil.currentUserId(),otherUser.getUserId());
+        chatroomId = FirebaseUtil.getChatroomId(FirebaseUtil.currentUserId(), otherUser.getUserId());
 
         messageInput = findViewById(R.id.chat_message_input);
         sendMessageBtn = findViewById(R.id.message_send_btn);
+        saveMessageBtn = findViewById(R.id.message_save_btn);
+        loadDraftsBtn = findViewById(R.id.load_drafts_btn);
         backBtn = findViewById(R.id.back_btn);
         otherUsername = findViewById(R.id.other_username);
         recyclerView = findViewById(R.id.chat_recycler_view);
+        draftsRecyclerView = findViewById(R.id.drafts_recycler_view);
         imageView = findViewById(R.id.profile_pic_image_view);
 
         FirebaseUtil.getOtherProfilePicStorageRef(otherUser.getUserId()).getDownloadUrl()
                 .addOnCompleteListener(t -> {
-                    if(t.isSuccessful()){
-                        Uri uri  = t.getResult();
-                        AndroidUtil.setProfilePic(this,uri,imageView);
+                    if (t.isSuccessful()) {
+                        Uri uri = t.getResult();
+                        AndroidUtil.setProfilePic(this, uri, imageView);
                     }
                 });
 
-        backBtn.setOnClickListener((v)->{
-            onBackPressed();
+        backBtn.setOnClickListener((v) -> {
+            if (draftsRecyclerView.getVisibility() == VISIBLE){
+                draftsRecyclerView.setVisibility(GONE);
+                recyclerView.setVisibility(VISIBLE);
+            } else {
+                onBackPressed();
+            }
         });
         otherUsername.setText(otherUser.getUsername());
 
         sendMessageBtn.setOnClickListener((v -> {
             String message = messageInput.getText().toString().trim();
-            if(message.isEmpty())
+            if (message.isEmpty())
                 return;
             sendMessageToUser(message);
         }));
 
+
+        saveMessageBtn.setOnClickListener(v -> {
+            String message = messageInput.getText().toString().trim();
+            if (message.isEmpty())
+                return;
+            saveMessageToUser(message);
+            messageInput.setText("");
+        });
+
+        loadDraftsBtn.setOnClickListener(v -> {
+            loadDraftMessagesForCurrentUser();
+        });
+
         getOrCreateChatroomModel();
         setupChatRecyclerView();
+        setupDraftAdapter();
     }
 
-    void setupChatRecyclerView(){
+    void setupChatRecyclerView() {
         Query query = FirebaseUtil.getChatroomMessageReference(chatroomId)
                 .orderBy("timestamp", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<ChatMessageModel> options = new FirestoreRecyclerOptions.Builder<ChatMessageModel>()
-                .setQuery(query,ChatMessageModel.class).build();
+                .setQuery(query, ChatMessageModel.class).build();
 
-        adapter = new ChatRecyclerAdapter(options,getApplicationContext());
+        adapter = new ChatRecyclerAdapter(options, getApplicationContext());
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setReverseLayout(true);
         recyclerView.setLayoutManager(manager);
@@ -118,21 +153,59 @@ public class ChatActivity extends AppCompatActivity {
                 recyclerView.smoothScrollToPosition(0);
             }
         });
+
+        recyclerView.setVisibility(VISIBLE);
     }
 
-    void sendMessageToUser(String message){
+    void setupDraftAdapter(){
+        draftAdapter = new DraftRecyclerAdapter(new ArrayList<>(), this);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setReverseLayout(true);
+        draftsRecyclerView.setLayoutManager(manager);
+        draftsRecyclerView.setAdapter(draftAdapter);
+        draftsRecyclerView.setVisibility(GONE);
+    }
+
+    void saveMessageToUser(String message) {
+        try {
+            Draft draftMessage = new Draft();
+            draftMessage.userId = FirebaseUtil.currentUserId();
+            draftMessage.otherUserId = otherUser.getUserId();
+            draftMessage.message = message;
+            ((YourChatApplication) getApplicationContext()).getRoomDatabase().draftDao().insertAll(draftMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void loadDraftMessagesForCurrentUser() {
+        try {
+            recyclerView.setVisibility(GONE);
+            draftsRecyclerView.setVisibility(VISIBLE);
+            List<Draft> draftMessagesList = ((YourChatApplication) getApplicationContext())
+                    .getRoomDatabase().draftDao().loadAllByUserId(FirebaseUtil.currentUserId(), otherUser.getUserId());
+            draftAdapter.setMessages(draftMessagesList);
+            draftAdapter.notifyDataSetChanged();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void sendMessageToUser(String message) {
 
         chatroomModel.setLastMessageTimestamp(Timestamp.now());
         chatroomModel.setLastMessageSenderId(FirebaseUtil.currentUserId());
         chatroomModel.setLastMessage(message);
         FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel);
 
-        ChatMessageModel chatMessageModel = new ChatMessageModel(message,FirebaseUtil.currentUserId(),Timestamp.now());
+        ChatMessageModel chatMessageModel = new ChatMessageModel(message, FirebaseUtil.currentUserId(), Timestamp.now());
         FirebaseUtil.getChatroomMessageReference(chatroomId).add(chatMessageModel)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             messageInput.setText("");
                             sendNotification(message);
                         }
@@ -140,15 +213,15 @@ public class ChatActivity extends AppCompatActivity {
                 });
     }
 
-    void getOrCreateChatroomModel(){
+    void getOrCreateChatroomModel() {
         FirebaseUtil.getChatroomReference(chatroomId).get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 chatroomModel = task.getResult().toObject(ChatroomModel.class);
-                if(chatroomModel==null){
+                if (chatroomModel == null) {
                     //first time chat
                     chatroomModel = new ChatroomModel(
                             chatroomId,
-                            Arrays.asList(FirebaseUtil.currentUserId(),otherUser.getUserId()),
+                            Arrays.asList(FirebaseUtil.currentUserId(), otherUser.getUserId()),
                             Timestamp.now(),
                             ""
                     );
@@ -158,29 +231,29 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    void sendNotification(String message){
+    void sendNotification(String message) {
 
         FirebaseUtil.currentUserDetails().get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 UserModel currentUser = task.getResult().toObject(UserModel.class);
-                try{
-                    JSONObject jsonObject  = new JSONObject();
+                try {
+                    JSONObject jsonObject = new JSONObject();
 
                     JSONObject notificationObj = new JSONObject();
-                    notificationObj.put("title",currentUser.getUsername());
-                    notificationObj.put("body",message);
+                    notificationObj.put("title", currentUser.getUsername());
+                    notificationObj.put("body", message);
 
                     JSONObject dataObj = new JSONObject();
-                    dataObj.put("userId",currentUser.getUserId());
+                    dataObj.put("userId", currentUser.getUserId());
 
-                    jsonObject.put("notification",notificationObj);
-                    jsonObject.put("data",dataObj);
-                    jsonObject.put("to",otherUser.getFcmToken());
+                    jsonObject.put("notification", notificationObj);
+                    jsonObject.put("data", dataObj);
+                    jsonObject.put("to", otherUser.getFcmToken());
 
                     callApi(jsonObject);
 
 
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
 
@@ -189,15 +262,15 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    void callApi(JSONObject jsonObject){
+    void callApi(JSONObject jsonObject) {
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
         OkHttpClient client = new OkHttpClient();
-        String url = "https://fcm.googleapis.com/fcm/send";
-        RequestBody body = RequestBody.create(jsonObject.toString(),JSON);
+        String url = "https://fcm.googleapis.com/v1/projects/yourchat-backend/messages:send";
+        RequestBody body = RequestBody.create(jsonObject.toString(), JSON);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
-                .header("Authorization","Bearer YOUR_API_KEY")
+                .header("Authorization", "Bearer YOUR_API_KEY")
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -211,5 +284,12 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onClick(Draft draft) {
+        messageInput.setText(draft.message);
+        recyclerView.setVisibility(VISIBLE);
+        draftsRecyclerView.setVisibility(GONE);
     }
 }

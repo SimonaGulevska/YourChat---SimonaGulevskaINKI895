@@ -14,30 +14,31 @@
         android:gravity="center"
         android:orientation="vertical">
         <ImageView
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+            android:layout_width="@dimen/image_big"
+            android:layout_height="@dimen/image_big"
+            android:contentDescription="@string/app_name"
             android:src="@drawable/chat_icon"
             app:tint="@color/my_secondary"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textSize="40sp"
+            android:textSize="@dimen/text_splash"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:fontFamily="monospace"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="@dimen/padding_double"/>
         <ProgressBar
-            android:layout_width="32dp"
+            android:layout_width="@dimen/default_button_size"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Developed by Simona Gulevska"
+        android:text="@string/developed_by_simona_gulevska"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/padding_double"
         android:textColor="@color/off_white"/>
 </RelativeLayout>

@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/edit_text_rounded_corner"
-    android:layout_margin="10dp"
+    android:layout_margin="@dimen/default_padding"
     android:elevation="2dp">
 
     <include layout="@layout/profile_pic_view"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="@dimen/big_button_size"
+        android:layout_height="@dimen/big_button_size"
         android:layout_gravity="center"
-        android:layout_margin="10dp"/>
+        android:layout_margin="@dimen/default_padding"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,14 +20,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User name"
-            android:textSize="18sp"
+            android:text="@string/username"
+            android:textSize="@dimen/text_default"
             android:textStyle="bold"
             android:id="@+id/user_name_text"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+000000000000"
+            android:text="@string/number"
             android:id="@+id/phone_text"/>
     </LinearLayout>
 

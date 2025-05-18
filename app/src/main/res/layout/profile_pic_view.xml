@@ -4,11 +4,12 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="@dimen/image_big"
+        android:layout_height="@dimen/image_big"
         android:background="@drawable/circular_background"
+        android:contentDescription="@string/emptyString"
         android:src="@drawable/person_icon"
-        android:padding="4dp"
+        android:padding="@dimen/default_padding_half"
         android:backgroundTint="@color/off_white"
         android:layout_centerInParent="true"
         android:id="@+id/profile_pic_image_view"/>

@@ -11,6 +11,7 @@ import com.example.yourchat.adapter.SearchUserRecyclerAdapter;
 import com.example.yourchat.model.UserModel;
 import com.example.yourchat.utils.FirebaseUtil;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.Query;
 
 public class SearchUserActivity extends AppCompatActivity {
@@ -26,6 +27,9 @@ public class SearchUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_user);
+
+        ((YourChatApplication)getApplication()).getFirebaseAnalytics()
+                .logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, new Bundle());
 
         searchInput = findViewById(R.id.seach_username_input);
         searchButton = findViewById(R.id.search_user_btn);

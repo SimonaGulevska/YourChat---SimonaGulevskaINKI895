@@ -13,6 +13,7 @@ import com.example.yourchat.utils.AndroidUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -31,9 +32,9 @@ import java.util.concurrent.TimeUnit;
 public class LoginOtpActivity extends AppCompatActivity {
     String phoneNumber;
     Long timeoutSeconds = 60L;
-//    to verify the otp
+    //    to verify the otp
     String verificationCode;
-//    to resend the otp to the user
+    //    to resend the otp to the user
     PhoneAuthProvider.ForceResendingToken resendingToken;
 
     EditText otpInput;
@@ -47,6 +48,9 @@ public class LoginOtpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_otp);
+
+        ((YourChatApplication)getApplication()).getFirebaseAnalytics()
+                .logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, new Bundle());
 
         otpInput = findViewById(R.id.login_otp);
         nextBtn = findViewById(R.id.login_next_btn);

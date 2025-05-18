@@ -1,13 +1,16 @@
 package com.example.yourchat.utils;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 
 public class FirebaseUtil {
@@ -15,7 +18,7 @@ public class FirebaseUtil {
     public static String currentUserId(){
         return FirebaseAuth.getInstance().getUid();
     }
-//if the user is logged application should open main activity
+    //if the user is logged application should open main activity
     public static boolean isLoggedIn(){
         if(currentUserId()!=null){
             return true;
@@ -50,7 +53,7 @@ public class FirebaseUtil {
     public static CollectionReference allChatroomCollectionReference(){
         return FirebaseFirestore.getInstance().collection("chatrooms");
     }
-//this method returns other user's id
+    //this method returns other user's id
     public static DocumentReference getOtherUserFromChatroom(List<String> userIds){
         if(userIds.get(0).equals(FirebaseUtil.currentUserId())){
             return allUserCollectionReference().document(userIds.get(1));
@@ -58,7 +61,7 @@ public class FirebaseUtil {
             return allUserCollectionReference().document(userIds.get(0));
         }
     }
-//this method returns timestamp as string
+    //this method returns timestamp as string
     public static String timestampToString(Timestamp timestamp){
         return new SimpleDateFormat("HH:MM").format(timestamp.toDate());
     }

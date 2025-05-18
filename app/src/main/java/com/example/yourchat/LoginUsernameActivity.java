@@ -16,6 +16,7 @@ import com.example.yourchat.utils.FirebaseUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 
@@ -32,11 +33,16 @@ public class LoginUsernameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_username);
 
+        ((YourChatApplication)getApplication()).getFirebaseAnalytics()
+                .logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, new Bundle());
+
         usernameInput = findViewById(R.id.login_username);
         letMeInBtn = findViewById(R.id.login_let_me_in_btn);
         progressBar = findViewById(R.id.login_progress_bar);
 
-        phoneNumber = getIntent().getExtras().getString("phone");
+        if (getIntent().hasExtra("phone")){
+            phoneNumber = getIntent().getExtras().getString("phone");
+        }
         getUsername();
 
         letMeInBtn.setOnClickListener((v -> {
@@ -45,7 +51,7 @@ public class LoginUsernameActivity extends AppCompatActivity {
 
 
     }
-//after let me in appears
+    //after let me in appears
     void setUsername() {
         String username = usernameInput.getText().toString();
         if (username.isEmpty() || username.length() < 3) {

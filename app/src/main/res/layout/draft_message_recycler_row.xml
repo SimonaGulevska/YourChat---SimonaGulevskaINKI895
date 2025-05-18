@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/default_padding"
+    android:layout_marginEnd="@dimen/message_size"
+    android:background="@drawable/edit_text_rounded_corner"
+    android:backgroundTint="@color/chat_color_sender"
+    android:id="@+id/draft_message_layout"
+    android:padding="@dimen/default_padding">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello"
+        android:textColor="@color/white"
+        android:id="@+id/message_textview"
+        android:textSize="@dimen/text_default" />
+</LinearLayout>

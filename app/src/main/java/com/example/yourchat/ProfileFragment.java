@@ -1,5 +1,4 @@
 package com.example.yourchat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,6 +25,7 @@ import com.example.yourchat.utils.FirebaseUtil;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.UploadTask;
@@ -84,6 +84,8 @@ public class ProfileFragment extends Fragment {
         }));
 
         logoutBtn.setOnClickListener((v)->{
+            FirebaseAuth.getInstance().signOut();
+
             FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -95,9 +97,6 @@ public class ProfileFragment extends Fragment {
                     }
                 }
             });
-
-
-
         });
 
         profilePic.setOnClickListener((v)->{
@@ -120,8 +119,14 @@ public class ProfileFragment extends Fragment {
             usernameInput.setError("Username length should be at least 3 characters");
             return;
         }
+        String newPhone = phoneInput.getText().toString();
+        if(newPhone.isEmpty() || newPhone.length()<3){
+            phoneInput.setError("Username length should be at least 3 characters");
+            return;
+        }
         //user has been updated
         currentUserModel.setUsername(newUsername);
+        currentUserModel.setPhone(newPhone);
         setInProgress(true);
 
 
@@ -133,10 +138,6 @@ public class ProfileFragment extends Fragment {
         }else{
             updateToFirestore();
         }
-
-
-
-
 
     }
 
@@ -168,8 +169,11 @@ public class ProfileFragment extends Fragment {
         FirebaseUtil.currentUserDetails().get().addOnCompleteListener(task -> {
             setInProgress(false);
             currentUserModel = task.getResult().toObject(UserModel.class);
-            usernameInput.setText(currentUserModel.getUsername());
-            phoneInput.setText(currentUserModel.getPhone());
+            if (currentUserModel !=null){
+                usernameInput.setText(currentUserModel.getUsername());
+                phoneInput.setText(currentUserModel.getPhone());
+            }
+
         });
     }
 

@@ -1,19 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">YourChat</string>
     <string name="developed_by_simona_gulevska">Developed by Simona Gulevska</string>
     <string name="login_anonymous">Login Anonymous</string>
-    <string name="one" translatable="false">1</string>
-    <string name="two" translatable="false">2</string>
-    <string name="three" translatable="false">3</string>
     <string name="enter_your_username">Enter your username</string>
     <string name="username">Username</string>
+    <string name="login">Login</string>
     <string name="enter">Enter</string>
     <string name="password">Password</string>
-    <string name="login">Login</string>
     <string name="login_gmail">Login Gmail</string>
     <string name="login_fb">Login FB</string>
     <string name="create_user">Create user</string>
-    <string name="emptyString" translatable="false" />
     <string name="write_message_here">Write message here</string>
     <string name="next">NEXT</string>
     <string name="otp">OTP</string>
@@ -32,7 +29,5 @@
     <string name="enter_mobile_number">Enter mobile number</string>
     <string name="mobile">Mobile</string>
     <string name="your_app_will_not_show_notifications">Your app will not show notifications</string>
-    <string name="facebook_app_id" translatable="false">1916623395815713</string>
-    <string name="facebook_client_token" translatable="false">13a1e841e8361ef5d3d4bb8927c97d63</string>
     <string name="please_populate_credentials">Please populate credentials</string>
 </resources>

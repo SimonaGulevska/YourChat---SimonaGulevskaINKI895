@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:layout_margin="20dp"
+    android:layout_margin="@dimen/padding_double"
     android:weightSum="100"
     tools:context=".LoginOtpActivity">
 
@@ -16,9 +16,9 @@
         android:gravity="center"
         android:layout_weight="20">
         <RelativeLayout
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="10dp"
+            android:layout_width="@dimen/default_button_size"
+            android:layout_height="@dimen/default_button_size"
+            android:layout_margin="@dimen/default_padding"
             android:background="@drawable/circular_background"
             android:backgroundTint="@color/light_gray">
             <TextView
@@ -26,13 +26,13 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                android:text="1"/>
+                android:textSize="@dimen/text_default"
+                android:text="@string/one"/>
         </RelativeLayout>
         <RelativeLayout
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="10dp"
+            android:layout_width="@dimen/default_button_size"
+            android:layout_height="@dimen/default_button_size"
+            android:layout_margin="@dimen/default_padding"
             android:background="@drawable/circular_background"
             android:backgroundTint="@color/my_primary">
             <TextView
@@ -40,13 +40,13 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                android:text="2"/>
+                android:textSize="@dimen/text_default"
+                android:text="@string/two"/>
         </RelativeLayout>
         <RelativeLayout
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="10dp"
+            android:layout_width="@dimen/default_button_size"
+            android:layout_height="@dimen/default_button_size"
+            android:layout_margin="@dimen/default_padding"
             android:background="@drawable/circular_background"
             android:backgroundTint="@color/light_gray">
             <TextView
@@ -54,14 +54,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:textColor="@color/white"
-                android:textSize="18sp"
-                android:text="3"/>
+                android:textSize="@dimen/text_default"
+                android:text="@string/three"/>
         </RelativeLayout>
     </LinearLayout>
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="@dimen/image_big"
+        android:layout_height="@dimen/image_big"
+        android:contentDescription="@string/emptyString"
         android:src="@drawable/otp_icon"
         app:tint="@color/my_primary"
         android:layout_weight="20"
@@ -70,11 +71,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter OTP sent to your phone number"
+        android:text="@string/enter_otp_sent_to_your_phone_number"
         android:layout_gravity="center_vertical"
         android:letterSpacing="0.08"
         android:textStyle="bold"
-        android:textSize="25sp"
+        android:textSize="@dimen/text_big"
         android:layout_weight="5"/>
 
     <LinearLayout
@@ -86,11 +87,11 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:hint="OTP"
+            android:padding="@dimen/default_padding"
+            android:hint="@string/otp"
             android:inputType="number"
             android:maxLength="6"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/default_padding"
             android:background="@drawable/edit_text_rounded_corner"
             android:elevation="5dp"
             android:id="@+id/login_otp"/>
@@ -106,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_rounded_corner"
-            android:text="NEXT"
+            android:text="@string/next"
             android:id="@+id/login_next_btn"/>
         <ProgressBar
             android:layout_width="32dp"
@@ -121,7 +122,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="10"
         android:gravity="center"
-        android:text="Resend OTP in 30 sec"
+        android:text="@string/resend_otp_in_30_sec"
         android:id="@+id/resend_otp_textview"/>
 
 </LinearLayout>
