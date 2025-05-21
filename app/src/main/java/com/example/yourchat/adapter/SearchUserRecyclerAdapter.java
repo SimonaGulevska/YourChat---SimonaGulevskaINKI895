@@ -22,12 +22,13 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<UserModel, SearchUserRecyclerAdapter.UserModelViewHolder> {
 
     Context context;
-
+    // Constructor that receives the Firestore options and the application context
     public SearchUserRecyclerAdapter(@NonNull FirestoreRecyclerOptions<UserModel> options,Context context) {
         super(options);
         this.context = context;
     }
-//assign the data from firestore
+
+    //assign the data from firestore
     @Override
     protected void onBindViewHolder(@NonNull UserModelViewHolder holder, int position, @NonNull UserModel model) {
         holder.usernameText.setText(model.getUsername());
@@ -35,7 +36,7 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<UserMode
         if(model.getUserId().equals(FirebaseUtil.currentUserId())){
             holder.usernameText.setText(model.getUsername()+" (Me)");
         }
-
+        // We get the other user pic from Firebase
         FirebaseUtil.getOtherProfilePicStorageRef(model.getUserId()).getDownloadUrl()
                 .addOnCompleteListener(t -> {
                     if(t.isSuccessful()){
@@ -57,10 +58,12 @@ public class SearchUserRecyclerAdapter extends FirestoreRecyclerAdapter<UserMode
     @NonNull
     @Override
     public UserModelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // inflate XML for single row from RecyclerView (redot za search user)
         View view = LayoutInflater.from(context).inflate(R.layout.search_user_recycler_row,parent,false);
+        // return new ViewHolder with inflated layout (view)
         return new UserModelViewHolder(view);
     }
-
+    // Innerclass which defines ViewHolder structure
     class UserModelViewHolder extends RecyclerView.ViewHolder{
         TextView usernameText;
         TextView phoneText;

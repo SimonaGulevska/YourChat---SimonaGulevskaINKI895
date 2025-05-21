@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FirebaseUtil {
-
+    // Returns the ID of the currently loggedIn user
     public static String currentUserId(){
         return FirebaseAuth.getInstance().getUid();
     }
@@ -25,23 +25,23 @@ public class FirebaseUtil {
         }
         return false;
     }
-
+    // Referenca do dokumentot so podatoci za tekovniot user
     public static DocumentReference currentUserDetails(){
         return FirebaseFirestore.getInstance().collection("users").document(currentUserId());
     }
-
+    // Collection with all Users
     public static CollectionReference allUserCollectionReference(){
         return FirebaseFirestore.getInstance().collection("users");
     }
-
+    // Reference to specific Chatroom
     public static DocumentReference getChatroomReference(String chatroomId){
         return FirebaseFirestore.getInstance().collection("chatrooms").document(chatroomId);
     }
-
+    // Collection with all Messages in a specific chatroom
     public static CollectionReference getChatroomMessageReference(String chatroomId){
         return getChatroomReference(chatroomId).collection("chats");
     }
-
+    // Generates identical ChatroomID regardless of the order of the userIDs
     public static String getChatroomId(String userId1,String userId2){
         if(userId1.hashCode()<userId2.hashCode()){
             return userId1+"_"+userId2;
@@ -49,7 +49,7 @@ public class FirebaseUtil {
             return userId2+"_"+userId1;
         }
     }
-
+    // Collection with all Chatrooms
     public static CollectionReference allChatroomCollectionReference(){
         return FirebaseFirestore.getInstance().collection("chatrooms");
     }
@@ -65,16 +65,16 @@ public class FirebaseUtil {
     public static String timestampToString(Timestamp timestamp){
         return new SimpleDateFormat("HH:MM").format(timestamp.toDate());
     }
-
+    // Log out of the current user
     public static void logout(){
         FirebaseAuth.getInstance().signOut();
     }
-
+    // Storage reference for the current user's profile picture
     public static StorageReference  getCurrentProfilePicStorageRef(){
         return FirebaseStorage.getInstance().getReference().child("profile_pic")
                 .child(FirebaseUtil.currentUserId());
     }
-
+    // Storage reference for other user's profile picture
     public static StorageReference  getOtherProfilePicStorageRef(String otherUserId){
         return FirebaseStorage.getInstance().getReference().child("profile_pic")
                 .child(otherUserId);

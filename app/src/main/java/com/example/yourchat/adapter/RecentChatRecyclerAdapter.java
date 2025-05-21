@@ -28,37 +28,43 @@ import com.google.firebase.firestore.DocumentSnapshot;
 public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<ChatroomModel, RecentChatRecyclerAdapter.ChatroomModelViewHolder> {
 
     Context context;
-
+    // Constructor that receives the Firestore options and the application context
     public RecentChatRecyclerAdapter(@NonNull FirestoreRecyclerOptions<ChatroomModel> options,Context context) {
         super(options);
         this.context = context;
     }
 
+    // Method that sets the data in the ViewHolder for each row
     @Override
     protected void onBindViewHolder(@NonNull ChatroomModelViewHolder holder, int position, @NonNull ChatroomModel model) {
+        // gets the other user from the chatroom (not the current one)
         FirebaseUtil.getOtherUserFromChatroom(model.getUserIds())
                 .get().addOnCompleteListener(task -> {
                     if(task.isSuccessful()){
+                        // Check if the last message was sent by the current user
                         boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
 
-
+                        // get the model of the other user
                         UserModel otherUserModel = task.getResult().toObject(UserModel.class);
-
+                        // download the profile picture from Firebase Storage
                         FirebaseUtil.getOtherProfilePicStorageRef(otherUserModel.getUserId()).getDownloadUrl()
                                 .addOnCompleteListener(t -> {
                                     if(t.isSuccessful()){
                                         Uri uri  = t.getResult();
+                                        // set the URI as an image in the ImageView
                                         AndroidUtil.setProfilePic(context,uri,holder.profilePic);
                                     }
                                 });
-
+                        // set the username
                         holder.usernameText.setText(otherUserModel.getUsername());
                         if(lastMessageSentByMe)
+                            // set the last message, if it is from us we put "You: " before the text
                             holder.lastMessageText.setText("You : "+model.getLastMessage());
                         else
                             holder.lastMessageText.setText(model.getLastMessage());
+                        // showcase the time when the last message was sent
                         holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
-
+                        // When the entire row is clicked, a ChatActivity opens with the other user's data
                         holder.itemView.setOnClickListener(v -> {
                             //navigate to chat activity
                             Intent intent = new Intent(context, ChatActivity.class);
@@ -70,14 +76,14 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
                     }
                 });
     }
-
+    // Method that creates the ViewHolder with the appropriate layout
     @NonNull
     @Override
     public ChatroomModelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.recent_chat_recycler_row,parent,false);
         return new ChatroomModelViewHolder(view);
     }
-
+    // Inner class ViewHolder that holds the UI elements of the row
     class ChatroomModelViewHolder extends RecyclerView.ViewHolder{
         TextView usernameText;
         TextView lastMessageText;

@@ -1,20 +1,26 @@
 package com.example.yourchat.model;
 import com.google.firebase.Timestamp;
 
+// Class for the User
 public class UserModel {
     private String phone;
     private String username;
     private Timestamp createdTimestamp;
     private String userId;
     private String fcmToken;
+
+    // empty constructor required for Firebase during deserialization
     public UserModel() {
     }
+    // constructor to initialize fields
     public UserModel(String phone, String username, Timestamp createdTimestamp,String userId) {
         this.phone = phone;
         this.username = username;
         this.createdTimestamp = createdTimestamp;
         this.userId = userId;
     }
+
+    // Getter and setter methods
     public String getPhone() {
         return phone;
     }
