@@ -38,4 +38,4 @@ YourChat е мобилна апликација за размена на пор�
 - [Notification](https://drive.google.com/file/d/1yZv_ZKkS8_T7rOM_QeVqNaC82hO-n-WT/view?usp=drive_link)
 - [Other User LogIn](https://drive.google.com/file/d/1IaLBhDnvrvOH5tncE9BSdbHThmnBqxxy/view?usp=drive_link)
 - [Update User](https://drive.google.com/file/d/1WDdcMkRA71uVJvLNMGeazmx31j7FiG3-/view?usp=drive_link)
-- [Таблет приказ](https://drive.google.com/file/d/1ppuc5TWqZhWMCvWKAoOyeqrUNxNoZCTb/view?usp=drive_link)
+- [Таблет приказ](https://drive.google.com/file/d/1zqzcOWpGOkuUYRR91XRYQwUV300RU03G/view?usp=drive_link)
